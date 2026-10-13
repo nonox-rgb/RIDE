@@ -1,0 +1,51 @@
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: #000;
+  overflow: hidden;
+  overscroll-behavior: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Thèmes : ECO 0-10 km/h (vert), CRUISE 10-25 (jaune/orange), SPRINT >25 (rouge) */
+#app {
+  --c: #14d12e; --cl: #b4ffbb; --cd: #0a6b17;
+  height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+#app[data-mode="cruise"] { --c: #ff9d00; --cl: #ffe3b3; --cd: #7a4a00; }
+#app[data-mode="sprint"] { --c: #ff1f1f; --cl: #ffd6d6; --cd: #7a0000; }
+
+#dash {
+  display: block;
+  height: auto;
+  overflow: hidden;
+  width: min(100%, calc((100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom)) * 980 / 545));
+}
+
+text {
+  font-family: 'Open Sans', 'Segoe UI', Roboto, system-ui, sans-serif;
+  font-weight: 700;
+  fill: #fff;
+}
+.big  { font-size: 44px; }
+.spd  { font-size: 124px; }
+.unit { font-size: 22px; font-weight: 600; fill: #9b9b9b; }
+.unit.lg { font-size: 24px; fill: #d8d8d8; }
+.unit.sm { font-size: 18px; }
+.lab  { font-size: 80px; font-style: italic; }
+.lab.red { fill: #ff1a1a; filter: drop-shadow(0 0 8px rgba(255, 0, 0, .65)); }
+.glow { filter: drop-shadow(0 0 8px rgba(255, 255, 255, .55)); }
+.horizon { stroke: var(--c); opacity: .6; }
+
+/* un seul indicateur de mode à la fois */
+.ic { display: none; }
+#app[data-mode="eco"] .i-ped,
+#app[data-mode="cruise"] .i-bike,
+#app[data-mode="sprint"] .i-car { display: inline; }

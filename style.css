@@ -1,0 +1,81 @@
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: #000;
+  overflow: hidden;
+  overscroll-behavior: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Thèmes : ECO 0-10 km/h (vert), CRUISE 10-25 (jaune/orange), SPRINT >25 (rouge) */
+#app {
+  --c: #14d12e; --cl: #b4ffbb; --cd: #0a6b17;
+  height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+#app[data-mode="cruise"] { --c: #ff9d00; --cl: #ffe3b3; --cd: #7a4a00; }
+#app[data-mode="sprint"] { --c: #ff1f1f; --cl: #ffd6d6; --cd: #7a0000; }
+
+#dash {
+  display: block;
+  height: auto;
+  overflow: hidden;
+  width: min(100%, calc((100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom)) * 980 / 545));
+}
+
+text {
+  font-family: 'Open Sans', 'Segoe UI', Roboto, system-ui, sans-serif;
+  font-weight: 700;
+  fill: #fff;
+}
+.big  { font-size: 44px; }
+.spd  { font-size: 124px; }
+.unit { font-size: 22px; font-weight: 600; fill: #9b9b9b; }
+.unit.lg { font-size: 24px; fill: #d8d8d8; }
+.unit.sm { font-size: 18px; }
+.lab  { font-size: 80px; font-style: italic; }
+.lab.red { fill: #ff1a1a; filter: drop-shadow(0 0 8px rgba(255, 0, 0, .65)); }
+.glow { filter: drop-shadow(0 0 8px rgba(255, 255, 255, .55)); }
+.horizon { stroke: var(--c); opacity: .6; }
+
+/* un seul indicateur de mode à la fois */
+.ic { display: none; }
+#app[data-mode="eco"] .i-ped,
+#app[data-mode="cruise"] .i-bike,
+#app[data-mode="sprint"] .i-car { display: inline; }
+
+/* ---------- Mode vertical : compteur + carte ---------- */
+#mapwrap { display: none; }
+#map { position: absolute; inset: 0; background: #0e0e0e; }
+.leaflet-container { font-family: 'Open Sans', 'Segoe UI', system-ui, sans-serif; background: #0e0e0e; }
+.leaflet-container .leaflet-control-attribution { background: rgba(0, 0, 0, .55); color: #8a8a8a; font-size: 10px; }
+.leaflet-container .leaflet-control-attribution a { color: #aaa; }
+.leaflet-bottom { margin-bottom: env(safe-area-inset-bottom); }
+
+/* repère de position : couleur du mode en cours */
+.me-wrap { background: none; border: 0; }
+.me { position: relative; width: 26px; height: 26px; border-radius: 50%; }
+.me::before { content: ''; position: absolute; inset: 4px; border-radius: 50%; background: var(--c); border: 2px solid #fff; box-shadow: 0 0 14px var(--c); }
+.me::after { content: ''; position: absolute; inset: 0; border-radius: 50%; border: 2px solid var(--c); opacity: 0; animation: pulse 2s ease-out infinite; }
+@keyframes pulse { from { transform: scale(.5); opacity: .9; } to { transform: scale(2.2); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .me::after { animation: none; } }
+
+#recenter {
+  position: absolute; right: 16px; bottom: calc(22px + env(safe-area-inset-bottom)); z-index: 1200;
+  width: 52px; height: 52px; padding: 0; border-radius: 50%; display: grid; place-items: center;
+  background: rgba(16, 16, 16, .92); color: var(--c); border: 2px solid var(--c);
+  box-shadow: 0 0 14px rgba(0, 0, 0, .6); cursor: pointer;
+}
+#recenter[hidden] { display: none; }
+
+@media (orientation: portrait) {
+  #app { display: flex; flex-direction: column; place-items: initial; padding: env(safe-area-inset-top) 0 0; }
+  #dash { width: 100%; flex: none; position: relative; z-index: 2; pointer-events: none; }
+  #mapwrap { display: block; flex: 1; min-height: 0; position: relative; z-index: 1; margin-top: calc(-155 / 980 * 100vw); }
+}
